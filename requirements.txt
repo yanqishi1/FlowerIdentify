@@ -1,0 +1,5 @@
+Django==3.2.7
+Pillow==9.3.0
+timm==0.4.12
+torch==1.9.0+cu111
+torchvision==0.10.0+cu111

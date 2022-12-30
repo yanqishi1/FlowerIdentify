@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>识别结果</title>
+    <style>
+    .main{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+     .result{
+         font-size: 4em;
+         color: forestgreen;
+     }
+    .msg{
+        font-size: 3em;
+    }
+    .back{
+        font-size: 3em;
+    }
+    </style>
+</head>
+<body>
+    <section class="main">
+        <h2 class="result">识别结果：{{ result }}</h2>
+        <p class="msg">{{ message }}</p>
+        <a class="back" href="/">返回</a>
+    </section>
+</body>
+</html>
