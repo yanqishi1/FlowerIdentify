@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from cls.views import predict,Home,predict_with_page
+from cls.views import predict,Home,predict_with_page,get_img
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('predict_wechat/', predict),
     path('predict/', predict_with_page),
+    path("get_img/", get_img),
     path("", Home),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

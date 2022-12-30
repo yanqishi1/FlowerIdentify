@@ -24,8 +24,10 @@
 </head>
 <body>
     <section class="main">
-        <h2 class="result">识别结果：{{ result }}</h2>
-        <p class="msg">{{ message }}</p>
+        <h2 class="result">{{ name }}</h2>
+        {% load static %}
+        <img src=" /get_img?name={{ img_url }}" alt="样例图片">
+        <p class="msg">{{ desc }}</p>
         <a class="back" href="/">返回</a>
     </section>
 </body>

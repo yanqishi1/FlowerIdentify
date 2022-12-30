@@ -1,10 +1,10 @@
 
-# Describe
+# Description
 This is a application of flower identification.
 
-The algorithm was based on CCT[https://arxiv.org/abs/2104.05704]. 
+The algorithm is developed based on CCT[https://arxiv.org/abs/2104.05704]. 
 
-The accuracy of it can reach 99.76%, which is state-of-art performers. 
+And the accuracy of it can reach 99.76%, which is state-of-art performance. 
 
 # How to use
 
@@ -16,8 +16,8 @@ timm==0.4.12
 torch==1.9.0+cu111
 torchvision==0.10.0+cu111
 ```
-## Install
 
+## Install
 ```bash
 pip install -r requirements.txt
 ```

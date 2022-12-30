@@ -21,8 +21,9 @@ def detect(request):
     if request.method == 'POST':
         image = request.FILES.get("file", None)
         if not image:
-            pred = -1
+            name = 'Not Found'
             message = 'Predict Error'
+            url = ''
         else:
             # 使用时间戳命名图片，防止文件名过长或重复
             # 获取文件类型
@@ -35,19 +36,31 @@ def detect(request):
             for chunk in image.chunks():
                 dest.write(chunk)
 
-            pred, message = detector.predict(path)
-            ImageCls.objects.create(image_path=timestamp, pred=pred,time=datetime.datetime.now())
-        return pred,message
+            name,message,url = detector.predict(path)
+            ImageCls.objects.create(image_path=timestamp, pred=name)
+        return name,message,url
 
+def get_img(request):
+    image_name = request.GET['name']
+
+    if image_name is None or image_name=='':
+        request.session['current_image'] = None
+        image_data = open("./static/default.jpg", "rb").read()
+    else:
+        image_path = "./static/flowers/" + image_name
+        request.session['current_image'] = image_name
+        image_data = open(image_path, "rb").read()
+
+    return HttpResponse(image_data, content_type="image/jpg")
 
 
 def predict(request):
-    pred,message = detect(request)
-    return HttpResponse(json.dumps({'pred': pred, 'message': message}))
+    name, desc,img_url = detect(request)
+    return HttpResponse(json.dumps({'name': name, 'desc': desc,'img_url':img_url}))
 
 def predict_with_page(request):
-    pred, message = detect(request)
+    name, desc,img_url = detect(request)
     return render(request,
                   "result.html",
-                  {'result': pred, 'message': message}
+                  {'name': name, 'desc': desc,'img_url':img_url}
                   )
