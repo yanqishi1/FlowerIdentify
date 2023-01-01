@@ -5,7 +5,8 @@ from models.cct import cct_14_7x2_384_fl
 
 class Detector():
     def __init__(self):
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cpu")
         mean = [0.4353, 0.3773, 0.2872]
         std = [0.2966, 0.2455, 0.2698]
         img_size = 384
@@ -16,6 +17,7 @@ class Detector():
         ])
 
         self.model = cct_14_7x2_384_fl(pretrained=True, progress=True).to(self.device)
+        self.model.eval()
         self.flower_name = {'21': ['fire lily','火百合','火百合是龙舌兰科茅花属的多年生植物，是澳大利亚东部的特有种。我国热带地区引种栽培。'],
                              '3': ['canterbury bells','风铃草；吊钟花','风铃草（学名：Campanula medium L.）是桔梗科、风铃草属二年生宿根草本植物，株高50-120厘米；茎粗壮直立，基生。叶簇生，卵形至倒卵形；小花1-2朵聚生成总状花序，花冠钟形，长约6厘米，有白、蓝或紫等色；蒴果，带有宿存的花萼裂片；种子多数，椭圆状，平滑。花期5-6月。'],
                              '45': 'bolero deep blue',
@@ -121,13 +123,14 @@ class Detector():
 
 
     def forward(self, filename):
-        img = Image.open(filename)
-        x = self.transform(img)
-        x = x.unsqueeze(0)
-        x = x.to(self.device)
-        out = self.model(x)
-        pred = out.max(1, keepdim=True)[1].item()
-        return pred, self.flower_name[str(pred)]
+        with torch.no_grad():
+            img = Image.open(filename)
+            x = self.transform(img)
+            x = x.unsqueeze(0)
+            x = x.to(self.device)
+            out = self.model(x)
+            pred = out.max(1, keepdim=True)[1].item()
+            return pred, self.flower_name[str(pred)]
 
     def ROI(self, src, resize_parameter=0.5):
         '''
