@@ -14,7 +14,8 @@ class Detector():
             transforms.ToTensor(),
             transforms.Normalize(mean=mean, std=std)
         ])
-
+        # 识别阈值，低于此阈值表示不在识别范围内
+        self.threshold = 0.6
         self.model = cct_14_7x2_384_fl(pretrained=True, progress=True).to(self.device)
         self.model.eval()
 
@@ -120,6 +121,7 @@ class Detector():
                             '46':['wallflower ',' 桂竹香','桂竹香（学名：Erysimum × cheiri (L.) Crantz）是十字花科糖芥属植物，多年生草本，高20-60厘米；茎直立，具棱角，下部木质化，具分枝，全体有贴生长柔毛。基生叶莲座状，倒披针形、披针形至线形，顶端急尖，基部渐狭；叶柄长7-10毫米；茎生叶较小，近无柄。总状花序果期伸长；花桔黄色或黄褐色，芳香；花梗长4-7毫米；萼片长圆形；花瓣倒卵形，有长爪。长角果线形，直立；果梗上升；种子卵形，浅棕色，顶端有翅。花期4-5月，果期5-6月'],
                             '77':['passion flower ',' 西番莲 ','西番莲（学名：Passiflora caerulea L.）是多年生常绿攀缘木质藤本植物，是一种芳香可口的水果，有“果汁之王”的美誉。又名受难果、巴西果、藤桃、热情果、转心莲、西洋鞠，转枝莲、洋酸茄花，时计草。'],
                             '51':['petunia ',' 矮牵牛 ','碧冬茄（学名：Petunia hybrida Vilm.）是茄科，碧冬茄属一年生草本植物，高可达60厘米，叶片卵形，顶端急尖，侧脉不显著，花单生于叶腋，裂片条形，顶端钝，果时宿存；花冠白色或紫堇色，有各式条纹，漏斗状，花柱稍超过雄蕊。蒴果圆锥状，种子极小，近球形，褐色。'],
+                            '102': ['Not Found', '不在识别范围内','匹配度低，不在识别范围内。请确保拍摄的目标是花朵'],
                             }
 
 
@@ -130,7 +132,12 @@ class Detector():
             x = x.unsqueeze(0)
             x = x.to(self.device)
             out = self.model(x)
-            pred = out.max(1, keepdim=True)[1].item()
+            out = torch.softmax(out, dim=1)
+            suitability = out.max().item()
+            if suitability<self.threshold:
+                pred = 102
+            else:
+                pred = out.max(1, keepdim=True)[1].item()
             return pred, self.flower_name[str(pred)]
 
     def ROI(self, src, resize_parameter=0.5):
